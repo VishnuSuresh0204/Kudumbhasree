@@ -1,0 +1,80 @@
+{% extends 'ADMIN/adminCommon.html' %}
+{% load static %}
+{% for m in messages %}
+<script>
+    alert("{{m}}")
+</script>
+{% endfor %}
+{% block content %}
+    
+    <section class="hero-wrap hero-wrap-2" style="background-image: url(/static/images/kkb.webp);" data-stellar-background-ratio="0.5">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row no-gutters slider-text js-fullheight align-items-end">
+          <div class="col-md-9 ftco-animate pb-5">
+          	<p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home <i class="fa fa-chevron-right"></i></a></span> <span>View Loan<i class="fa fa-chevron-right"></i></span></p>
+            <h1 class="mb-3 bread">View Loan</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+	  <section class="ftco-section contact-section">
+      <div class="container">
+        <div class="row block-9 justify-content-center mb-5">
+          <div class="col-md-12 mb-md-5">
+            <h1 style="margin-left: 430px;">View Loan</h1>
+           <table class="table table-bordered table-striped">
+            <thead style="background-color: #f4a3b1;">
+            <tr>
+                <th>Loan ID</th>
+                <th>Username</th>
+                <th>Details</th>
+                <th>Amount</th>
+                <th>Purpose</th>
+                <th>Status</th>
+                <th>Applied Date</th>
+                <th colspan="2">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in data %}
+            <tr>
+                <td><b>0012{{i.id}}</b></td>
+                <td>{{i.user_id.Username}}</td>
+                <td>{{i.user_id.Email}}<br>{{i.user_id.Phone}}</td>
+                <td>₹{{i.amount}}</td>
+                <td>{{i.purpose}}</td>
+                <td style="color: green;">{{i.loan_status}}</td>
+                <td>{{i.applied_on}}</td>
+                {% if i.loan_status == "pending" %}
+                <td><a href="\approveLoan?id={{i.id}}" class="btn btn-success">Approve</a>
+                    <a href="\rejectLoan?id={{i.id}}" class="btn btn-danger">Reject</a>
+                </td>
+                {% elif i.loan_status == "approved" %}
+                <td>
+                    <a href="/loanDuration?id={{i.id}}" class="btn btn-danger">Duration</a>
+                </td>
+                {% elif i.loan_status  == "Approved" %}
+                    <td style="color: crimson;"><b>Duration:</b><br> {{i.duration_weeks}} Weeks</td>
+                    <td><b>Weekly Payment:</b> ₹{{i.weekly_payment}}</td>
+                {% else %}
+                <td><span class="badge badge-secondary">{{ i.loan_status }}</span></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+           </table>
+          	<!-- <h2 class="text-center mt-5">If you got any questions please do not hesitate to send us a message</h2> -->
+          </div>
+        </div>
+      </div>
+    </section>	
+<style>
+    th,td{
+        text-align: center;
+    }
+</style>
+    {% endblock %}
+
+   

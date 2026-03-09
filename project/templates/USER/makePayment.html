@@ -1,0 +1,285 @@
+{% extends 'USER/userCommon.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  .payment-container {
+    padding: 80px 0;
+    background: #f8f9fa;
+    min-height: 100vh;
+  }
+
+  .atm-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+    border-radius: 20px;
+    padding: 30px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    margin-bottom: 30px;
+    transition: transform 0.3s ease;
+  }
+
+  .atm-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .atm-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .card-chip {
+    width: 60px;
+    height: 45px;
+    background: linear-gradient(135deg, #d4af37 0%, #f9e27c 100%);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .card-chip::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  .card-number {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 24px;
+    letter-spacing: 4px;
+    margin-bottom: 30px;
+    display: block;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .card-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .info-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  .info-value {
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+
+  .card-logo {
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 20px;
+    opacity: 0.8;
+  }
+
+  /* Form Styling */
+  .payment-form-card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  }
+
+  .form-control-custom {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 12px 15px;
+    height: auto;
+    transition: all 0.3s ease;
+  }
+
+  .form-control-custom:focus {
+    border-color: #f4a3b1;
+    box-shadow: 0 0 0 0.2rem rgba(244, 163, 177, 0.25);
+  }
+
+  .btn-pay {
+    background: #f4a3b1;
+    border: none;
+    color: white;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 18px;
+    width: 100%;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(244, 163, 177, 0.3);
+  }
+
+  .btn-pay:hover {
+    background: #e98a9c;
+    transform: scale(1.02);
+    color: white;
+  }
+</style>
+
+<section class="hero-wrap hero-wrap-2" style="background-image: url(/static/images/kkb.webp);"
+  data-stellar-background-ratio="0.5">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row no-gutters slider-text js-fullheight align-items-end">
+      <div class="col-md-9 ftco-animate pb-5">
+        <p class="breadcrumbs">
+          <span class="mr-2"><a href="#">Home <i class="fa fa-chevron-right"></i></a></span>
+          <span>Secure Checkout <i class="fa fa-chevron-right"></i></span>
+        </p>
+        <h2 class="bread text-white">Secure Loan Payment</h2>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="payment-container">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-10 col-lg-8">
+        <div class="row">
+          <!-- Left: ATM Card Preview -->
+          <div class="col-md-12 mb-4">
+            <div class="atm-card mx-auto" style="max-width: 450px;">
+              <div class="card-logo">VISA</div>
+              <div class="card-chip"></div>
+              <span class="card-number" id="preview-number">**** **** **** ****</span>
+              <div class="card-info">
+                <div>
+                  <span class="info-label">Card Holder</span>
+                  <span class="info-value text-uppercase" id="preview-name">YOUR NAME</span>
+                </div>
+                <div>
+                  <span class="info-label">Expires</span>
+                  <span class="info-value" id="preview-expiry">MM/YY</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Form Details -->
+          <div class="col-md-12">
+            <div class="payment-form-card">
+              <h4 class="mb-4 font-weight-bold">Enter Card Details</h4>
+              <form method="post" id="payment-form">
+                {% csrf_token %}
+
+                <input type="hidden" name="loan_id" value="{{ loan.id }}">
+                <input type="hidden" name="week_number" value="{{ week_number }}">
+
+                <div class="form-group mb-4">
+                  <label class="text-muted small font-weight-bold">CARDHOLDER NAME</label>
+                  <input type="text" name="card_name" class="form-control form-control-custom"
+                    placeholder="As it appears on card" required id="input-name">
+                </div>
+
+                <div class="form-group mb-4">
+                  <label class="text-muted small font-weight-bold">CARD NUMBER</label>
+                  <div class="input-group">
+                    <input type="text" name="card_number" class="form-control form-control-custom"
+                      placeholder="0000 0000 0000 0000" maxlength="19" required id="input-number"
+                      pattern="\d{4} \d{4} \d{4} \d{4}" title="Enter a 16-digit card number in '0000 0000 0000 0000' format">
+                    <div class="input-group-append">
+                      <span class="input-group-text bg-white border-left-0"><i class="fa fa-lock text-muted"></i></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-6">
+                    <div class="form-group mb-4">
+                      <label class="text-muted small font-weight-bold">EXPIRY DATE</label>
+                      <input type="text" name="expiry" class="form-control form-control-custom" placeholder="MM/YY"
+                        maxlength="5" required id="input-expiry"
+                        pattern="\d{2}/\d{2}" title="Enter expiry in MM/YY format">
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="form-group mb-4">
+                      <label class="text-muted small font-weight-bold">CVV</label>
+                      <input type="password" name="cvv" class="form-control form-control-custom" placeholder="***"
+                        maxlength="3" required
+                        pattern="\d{3}" title="Enter a 3-digit CVV">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded shadow-sm">
+                  <div>
+                    <div class="text-muted small">WEEK PAYMENT</div>
+                    <div class="font-weight-bold">Week {{ week_number }}</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-muted small">TOTAL AMOUNT</div>
+                    <div class="h4 mb-0 font-weight-bold text-success">₹{{ loan.weekly_payment }}</div>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-pay">
+                  Confirm Payment
+                </button>
+                <div class="text-center mt-3">
+                  <a href="/viewMyLoans" class="text-muted small"><i class="fa fa-arrow-left"></i> Back to Loans</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Live preview logic
+  const inputNumber = document.getElementById('input-number');
+  const inputName = document.getElementById('input-name');
+  const inputExpiry = document.getElementById('input-expiry');
+
+  const previewNumber = document.getElementById('preview-number');
+  const previewName = document.getElementById('preview-name');
+  const previewExpiry = document.getElementById('preview-expiry');
+
+  inputNumber.addEventListener('input', (e) => {
+    let val = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    let formatted = val.match(/.{1,4}/g)?.join(' ') || '';
+    e.target.value = formatted;
+    previewNumber.textContent = formatted || '**** **** **** ****';
+  });
+
+  inputName.addEventListener('input', (e) => {
+    previewName.textContent = e.target.value || 'YOUR NAME';
+  });
+
+  inputExpiry.addEventListener('input', (e) => {
+    let val = e.target.value.replace(/\//g, '').replace(/[^0-9]/gi, '');
+    if (val.length >= 2) {
+      val = val.substring(0, 2) + '/' + val.substring(2);
+    }
+    e.target.value = val;
+    previewExpiry.textContent = val || 'MM/YY';
+  });
+</script>
+
+{% endblock %}

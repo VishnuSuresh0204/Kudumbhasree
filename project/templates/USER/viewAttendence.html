@@ -1,0 +1,55 @@
+{% extends 'USER/userCommon.html' %}
+{% load static %}
+{% for m in messages %}
+<script>
+    alert("{{m}}")
+</script>
+{% endfor %}
+{% block content %}
+    
+    <section class="hero-wrap hero-wrap-2" style="background-image: url(/static/images/kkb.webp);" data-stellar-background-ratio="0.5">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row no-gutters slider-text js-fullheight align-items-end">
+          <div class="col-md-9 ftco-animate pb-5">
+          	<p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home <i class="fa fa-chevron-right"></i></a></span> <span>View Attendence<i class="fa fa-chevron-right"></i></span></p>
+            <h1 class="mb-3 bread">View Attendence</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+	  <section class="ftco-section contact-section">
+      <div class="container">
+        <div class="row block-9 justify-content-center mb-5">
+          <div class="col-md-12 mb-md-5">
+            <h1 style="margin-left: 430px;">View Attendence</h1>
+           <table class="table table-bordered table-striped">
+            <thead style="background-color: #f4a3b1;">
+            <tr>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in data %}
+            <tr>
+                <td>{{i.date}}</td>
+                <td class="text-success">{{i.attendence_status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+           </table>
+          	<!-- <h2 class="text-center mt-5">If you got any questions please do not hesitate to send us a message</h2> -->
+          </div>
+        </div>
+      </div>
+    </section>	
+<style>
+    th,td{
+        text-align: center;
+    }
+</style>
+    {% endblock %}
+
+   

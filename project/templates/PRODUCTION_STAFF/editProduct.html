@@ -1,0 +1,76 @@
+{% extends 'PRODUCTION_STAFF/staffCommon.html' %}
+{% load static %}
+{% for m in messages %}
+<script>
+    alert("{{ m }}");
+</script>
+{% endfor %}
+{% block content %}
+
+<section class="hero-wrap hero-wrap-2" style="background-image: url(/static/images/kkb.webp);" data-stellar-background-ratio="0.5">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row no-gutters slider-text js-fullheight align-items-end">
+      <div class="col-md-9 ftco-animate pb-5">
+        <p class="breadcrumbs">
+          <span class="mr-2"><a href="index.html">Home <i class="fa fa-chevron-right"></i></a></span>
+          <span>Edit Products <i class="fa fa-chevron-right"></i></span>
+        </p>
+        <h1 class="mb-3 bread">Edit Products</h1>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ftco-section contact-section">
+  <div class="container">
+    <div class="row block-9 justify-content-center mb-5">
+      <div class="col-md-8 mb-md-5">
+        <h1 style="margin-left: 200px;">Edit Products</h1>
+        <form class="bg-light p-5 contact-form" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          
+          <div class="form-group">
+            <input type="text" class="form-control" value="{{product.product_name}}" name="product_name" placeholder="Product Name" required>
+          </div>
+
+          <div class="form-group">
+            <input type="number" class="form-control" value="{{product.product_price}}" name="product_price" placeholder="Product Price" min="0" step="0.01" required>
+          </div>
+
+          <div class="form-group">
+            <label>Product Image</label>
+            <input type="file" class="form-control" name="product_img" accept="image/*">
+            <br>
+            <img src="/static/media/{{ product.product_img }}" width="100">
+        </div>
+        <small class="text-muted">Current image: {{ product.product_img }}</small>
+
+          <div class="form-group">
+            <label>Production Date</label>
+            <input type="date" class="form-control" value="{{product.production_date|date:'Y-m-d'}}" name="production_date" required>
+          </div>
+
+          <div class="form-group">
+            <label>Expiry Date</label>
+            <input type="date" class="form-control" value="{{product.expiry_date|date:'Y-m-d'}}" name="expiry_date" required>
+          </div>
+
+          <div class="form-group">
+            <input type="number" class="form-control" value="{{product.product_stock}}" name="product_stock" placeholder="Product Stock" min="1" step="1" required>
+          </div>
+
+          <div class="form-group">
+            <textarea name="product_description" value="{{product.product_description}}" cols="30" rows="4" class="form-control" placeholder="Product Description">{{product.product_description}}</textarea>
+          </div>
+
+          <div class="form-group">
+            <input type="submit" value="Update Product" class="btn btn-primary py-3 px-5">
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

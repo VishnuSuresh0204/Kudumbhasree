@@ -3,17 +3,6 @@
 
 {% block content %}
 
-<!-- Messages -->
-{% if messages %}
-<div class="container mt-3">
-  {% for m in messages %}
-  <div class="alert alert-info alert-dismissible fade show text-center">
-    {{ m }}
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-  </div>
-  {% endfor %}
-</div>
-{% endif %}
 
 <!-- Hero Section -->
 <section class="hero-wrap hero-wrap-2"
@@ -124,15 +113,10 @@
                           <span class="badge badge-warning">Upcoming</span>
                         {% endif %}
 
-                        <form method="post" action="{% url 'make_payment' %}" class="d-inline">
-                          {% csrf_token %}
-                          <input type="hidden" name="loan_id" value="{{ loan.id }}">
-                          <input type="hidden" name="week_number" value="{{ w.week_number }}">
-                          <button
-                            class="btn btn-sm {% if w.status_curr == 'Overdue' %}btn-danger{% else %}btn-success{% endif %} ml-1">
-                            Pay Now
-                          </button>
-                        </form>
+                        <a href="{% url 'make_payment' %}?id={{ loan.id }}&week_number={{ w.week_number }}"
+                          class="btn btn-sm {% if w.status_curr == 'Overdue' %}btn-danger{% else %}btn-success{% endif %} ml-1">
+                          Pay Now
+                        </a>
                       </td>
 
                     {% else %}

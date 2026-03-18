@@ -18,13 +18,22 @@
     
     <link rel="stylesheet" href="{% static 'css/flaticon.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
-  {% for m in messages %}
-<script>
-alert("{{ m }}")
-</script>
-{% endfor %}
   <body>
+    {% if messages %}
+    <script>
+      {% for message in messages %}
+        Swal.fire({
+          icon: "{{ message.tags|default:'info' }}",
+          title: "{{ message.tags|title|default:'Message' }}",
+          text: "{{ message }}",
+          timer: 3000,
+          showConfirmButton: false
+        });
+      {% endfor %}
+    </script>
+    {% endif %}
     
 	  <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
 	    <div class="container-fluid">

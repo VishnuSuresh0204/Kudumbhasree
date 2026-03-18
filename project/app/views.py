@@ -16,7 +16,7 @@ def userRegister(request):
         image1=request.FILES['img']
         address1=request.POST['address']
         if User.objects.filter(Email=email1).exists():
-            messages.info(request,"Already Have Registered")
+            messages.error(request,"Already Have Registered")
         else:
             user=Login.objects.create_user(
                 username=email1,password=password1,usertype='user',viewPassword=password1,is_active=0)
@@ -24,7 +24,7 @@ def userRegister(request):
             register=User.objects.create(
                 Username=username1,Email=email1,Phone=phonenumber1,Password=password1,Image=image1,Address=address1,logid=user)
             register.save()
-            messages.info(request,"Registered Successfully.Waiting for approval!")
+            messages.success(request,"Registered Successfully.Waiting for approval!")
             return redirect("/login")
     return render(request, "userRegister.html")
 
@@ -37,7 +37,7 @@ def production_StaffRegister(request):
         image1=request.FILES['img']
         address1=request.POST['address']
         if Production_Staff.objects.filter(email=email1).exists():
-            messages.info(request,"Already Have Registered")
+            messages.error(request,"Already Have Registered")
         else:
             staff=Login.objects.create_user(
                 username=email1,password=password1,usertype='staff',viewPassword=password1,is_active=0)
@@ -45,7 +45,7 @@ def production_StaffRegister(request):
             register=Production_Staff.objects.create(
                 username=username1,email=email1,phone=phonenumber1,password=password1,image=image1,address=address1,logid=staff)
             register.save()
-            messages.info(request,"Registered Successfully.Waiting for approval!")
+            messages.success(request,"Registered Successfully.Waiting for approval!")
             return redirect("/login")
     return render(request, "production_staffRegister.html")
 
@@ -57,21 +57,21 @@ def login(request):
         user=authenticate(username=Email,password=Password)
         if user is not None:
             if user.usertype=="admin":
-                messages.info(request,"Welcome To The Admin Page")
+                messages.success(request,"Welcome To The Admin Page")
                 return redirect("/adminHome")
             elif user.usertype=="user":
                 request.session['uid']=user.id
-                messages.info(request,"Welcome To The User Page")
+                messages.success(request,"Welcome To The User Page")
                 return redirect("/userHome")
             elif user.usertype=="staff":
                 request.session['uid']=user.id
-                messages.info(request,"Welcome To The Staff Page")
+                messages.success(request,"Welcome To The Staff Page")
                 return redirect("/staffHome")
             else:
-                messages.info(request,"Invalid Username Or Password")
+                messages.error(request,"Invalid Username Or Password")
                 return redirect("/login")
         else:
-            messages.info(request,"Invalid Username Or Password")
+            messages.error(request,"Invalid Username Or Password")
             return redirect("/login")
     return render(request, "login.html")
 
@@ -93,10 +93,10 @@ def approveUsers(request):
     wor.is_active=int(status)
     wor.save()
     if status == '1':
-        messages.info(request," Approved successfully")
+        messages.success(request," Approved successfully")
     else:
         Login.objects.filter(id=id).delete()
-        messages.info(request," Rejected successfully")
+        messages.error(request," Rejected successfully")
     return redirect("/viewUsers")
 
 
@@ -104,7 +104,7 @@ def deleteUsers(request):
     id=request.GET['id']
     user=User.objects.get(id=id)
     Login.objects.filter(id=user.logid.id).delete()
-    messages.info(request,"Deleted Successfully")
+    messages.error(request,"Deleted Successfully")
     return redirect("/viewUsers")
 
 
@@ -120,10 +120,10 @@ def approveStaff(request):
         wor=Login.objects.get(id=id)
         wor.is_active=1
         wor.save()
-        messages.info(request," Approved successfully")
+        messages.success(request," Approved successfully")
     else:
         Login.objects.filter(id=id).delete()
-        messages.info(request," Rejected successfully")
+        messages.error(request," Rejected successfully")
     return redirect("/viewStaffs")
 
 
@@ -132,7 +132,7 @@ def blockUser(request):
     log=Login.objects.get(id=id)
     log.is_active=0
     log.save()
-    messages.info(request,"User Blocked Successfully")
+    messages.error(request,"User Blocked Successfully")
     return redirect("/viewUsers")
 
 
@@ -141,7 +141,7 @@ def unblockUser(request):
     log=Login.objects.get(id=id)
     log.is_active=1
     log.save()
-    messages.info(request,"User Unblocked Successfully")
+    messages.success(request,"User Unblocked Successfully")
     return redirect("/viewUsers")
 
 
@@ -150,7 +150,7 @@ def blockStaff(request):
     log=Login.objects.get(id=id)
     log.is_active=0
     log.save()
-    messages.info(request,"Staff Blocked Successfully")
+    messages.error(request,"Staff Blocked Successfully")
     return redirect("/viewStaffs")
 
 
@@ -159,7 +159,7 @@ def unblockStaff(request):
     log=Login.objects.get(id=id)
     log.is_active=1
     log.save()
-    messages.info(request,"Staff Unblocked Successfully")
+    messages.success(request,"Staff Unblocked Successfully")
     return redirect("/viewStaffs")
 
 
@@ -167,7 +167,7 @@ def deleteStaffs(request):
     id=request.GET['id']
     staff=Production_Staff.objects.get(id=id)
     Login.objects.filter(id=staff.logid.id).delete()
-    messages.info(request,"Deleted Successfully")
+    messages.error(request,"Deleted Successfully")
     return redirect("/viewStaffs")
 
 
@@ -180,7 +180,7 @@ def addAttendence(request):
         user_ins = User.objects.get(id=uid)
         atten=Attendance.objects.create(user_id=user_ins, date=date, attendence_status=status)
         atten.save()
-        messages.info(request,"Attendence Added")
+        messages.success(request,"Attendence Added")
     return render(request, "ADMIN/addAttendence.html",{"users":user})
 
 
@@ -211,7 +211,7 @@ def rejectLoan(request):
     loan = Loan.objects.get(id=loan_id)
     loan.loan_status = 'Rejected'
     loan.save()
-    messages.info(request, "Loan rejected.")
+    messages.error(request, "Loan rejected.")
     return redirect('/viewLoans')
 
 
@@ -511,7 +511,7 @@ def deleteProduct(request):
     pid = request.GET.get('id')
     product=Product.objects.filter(id=pid)
     product.delete()
-    messages.info(request, "Product Deleted.")
+    messages.error(request, "Product Deleted.")
     return redirect('/viewProducts')
 
 

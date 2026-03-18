@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=home" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
       .material-symbols-outlined {
@@ -387,7 +388,7 @@
                   <span>0</span><span>0</span>
                 </div>
               </div>
-              <form method="post">
+              <form method="post" id="payment-form" onsubmit="return validateExpiry()">
                 {% csrf_token %}
               <div class="card-data flex-fill flex-vertical">
                 
@@ -426,11 +427,11 @@
                   </div>
                   <div class="card-property-value flex-vertical-center">
                     <div class="input-container half-width">
-                      <input class="numbers" data-bound="mm_mock" data-def="00" type="number" min="1" max="12" step="1" placeholder="MM" required>  
+                      <input class="numbers" id="expiry-mm" data-bound="mm_mock" data-def="00" type="number" min="1" max="12" step="1" placeholder="MM" required>  
                     </div>
                     <span class="m-md">/</span>
                     <div class="input-container half-width">
-                      <input class="numbers" data-bound="yy_mock" data-def="01" type="number" min="23" max="99" step="1" placeholder="YY" required>
+                      <input class="numbers" id="expiry-yy" data-bound="yy_mock" data-def="01" type="number" min="26" max="99" step="1" placeholder="YY" required>
                     </div>
                   </div>
                 </div>
@@ -590,6 +591,25 @@ const tick = () => {
 
 setInterval(() => { tick(); }, 1000);
 tick();
+
+function validateExpiry() {
+    const month = parseInt(document.getElementById('expiry-mm').value);
+    const year = parseInt(document.getElementById('expiry-yy').value);
+    
+    const today = new Date();
+    const currentYear = today.getFullYear() % 100; // 2-digit
+    const currentMonth = today.getMonth() + 1;
+
+    if (year < currentYear || (year === currentYear && month < currentMonth)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Card Expired',
+            text: 'The card you entered has already expired.'
+        });
+        return false;
+    }
+    return true;
+}
 
       </script>
       
